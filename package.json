@@ -1,0 +1,24 @@
+{
+  "name": "friendfinder",
+  "version": "1.0.0",
+  "description": "dating app that match users by their answers to 10 questions.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/geoklou/FriendFinder.git"
+  },
+  "author": "geok lou",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/geoklou/FriendFinder/issues"
+  },
+  "homepage": "https://github.com/geoklou/FriendFinder#readme",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.4"
+  }
+}
