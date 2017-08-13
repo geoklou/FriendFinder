@@ -11,6 +11,7 @@
   
   <style>
     .blue{color:blue;}
+    .width300{width:300px; border: grey 1px solid}
     </style>
 </head>
 <body>
@@ -35,7 +36,6 @@
               
             </div>
             <div class="modal-body">
-              <p>Welcome!</p>
               <p id="datacontent"></p>
               <p id="modalContent"></p>
             </div>
@@ -235,7 +235,7 @@
       };
       console.log(newFriend);
      
-      // post object by URL, server response with callback 
+      // post object, server response with callback 
       $.post("/api/friends", newFriend)
       .done(function(data) {
         if (data){console.log("Yay! welcome " + data);}
@@ -255,26 +255,23 @@
           $("#q10").val("");
         });
 
-        //ajax uses url and get methods to get data
+        //ajax use url and get methods to get data
         $.ajax({url: "/api/match", method: "GET"})
         .done(function(data) {
-        // console.log(data);
+        
         if (data) {
-          var jdata = JSON.stringify(data);
-          //create variable to hold values
-          //display in modal pop-up
+          //create variable to hold values, display in modal pop-up
           var matchedFriends = $("<h4>");
           matchedFriends.addClass('blue');
-          // matchedFriends.text(jdata.name);
-          matchedFriends.text("Your matches: " + jdata);
-          //test
-          // matchedFriends.text("text: data.name");
-          // matchedFriends.attr("src", jdata.photo);
+          var image = $("<img>");
+          image.addClass('width300');
+            //loop thorugh array to find matches
+            for (var i = 0; i <data.length; i++){
+              image.attr("src", data[i].photo);
+              matchedFriends.html("Your match: " + data[i].name);
+            }
           $("#datacontent").append(matchedFriends);
-          //test if printing
-          // $("#modalContent").text("test");
-          //test if anything coming from apiRoutes
-          // $("#modalContent").text(jdata);
+          $("#datacontent").prepend(image);
           }
           else {
           $("#modalContent").text("Sorry, match not found.");
