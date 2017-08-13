@@ -7,7 +7,11 @@
   <script src="https://code.jquery.com/jquery.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 	<title>Friend Finder Survey</title>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  
+  <style>
+    .blue{color:blue;}
+    </style>
 </head>
 <body>
 	<div class="container">
@@ -19,6 +23,29 @@
     <div class="row">
       <div class="col-lg-12">
 
+          <!-- showFriends modal -->
+          <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog">
+        
+          <!-- modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Friends Found</h4>
+              
+            </div>
+            <div class="modal-body">
+              <p>Welcome!</p>
+              <p id="datacontent"></p>
+              <p id="modalContent"></p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+  
         <!-- survey Page -->
         <div class="panel panel-default">
           <div class="panel-heading">
@@ -42,7 +69,7 @@
                <label for="q1">Question 1</label>  
               <h4>Your mind is always buzzing with unexplored ideas and plans.</h4>
               <select data-placeholder="Select Option" class="chosen-select" id="q1">
-                <option value=""></option>
+                <option value="Select an option" place-holder="Select an option"></option>
                       <option value="1">1 (Strongly Disagree)</option>
                       <option value="2">2</option>
                       <option value="3">3</option>
@@ -168,9 +195,9 @@
                   </select>
               </div>
 
- <!--submit button below-->
+              <!--submit button below-->
               <div style="margin-top:10px;">
-              <button type="submit" id="submit" class="btn btn-primary submit">Submit</button>
+              <button type="button" id="submit" class="btn btn-primary" data-toggle="modal" data-target="#myModal">SUBMIT</button>
               </div>
 
             </form>
@@ -180,7 +207,6 @@
       </div>
 
     </div>
-<!--row ends-->
 
    <footer class="footer">
       <div class="container">
@@ -189,13 +215,12 @@
     </footer>
 
   </div>
-<!--container ends-->
+
 </body>
 
 <script type="text/javascript">
 
-    // user clicks SUBMIT button to post form data to express server - jQuery grabs values by ids & sends a post request to api
-    // api recognizes the route "/api/fiends" then post method in api-routes.js push data into friendsArray
+    // clicks SUBMIT button to post form data to express server
     $("#submit").on("click", function(event) {
       event.preventDefault();
       //grab form elements
@@ -208,46 +233,56 @@
          $("#q7 option:selected").val(), $("#q8 option:selected").val(),
          $("#q9 option:selected").val(), $("#q10 option:selected").val()]
       };
-          console.log(newFriend);
-          //check score sub array values captured
-          for (var i=0; i<newFriend.scores.length; i++){
-            console.log(newFriend.scores[i]);
-          }
-      
+      console.log(newFriend);
+     
       // post object by URL, server response with callback 
       $.post("/api/friends", newFriend)
       .done(function(data) {
-      // console.log(data);
-         alert("You are registered! " + data.name);
-
+        if (data){console.log("Yay! welcome " + data);}
+  
           // Clear the form when submitting
           $("#name").val("");
-          // $("#photo").val("");
-          // $("#q1").val("");
-          // $("#q2").val("");
-          // $("#q3").val("");
-          // $("#q4").val("");
-          // $("#q5").val("");
-          // $("#q6").val("");
-          // $("#q7").val("");
-          // $("#q8").val("");
-          // $("#q9").val("");
-          // $("#q10").val("");
+          $("#photo").val("");
+          $("#q1").val("");
+          $("#q2").val("");
+          $("#q3").val("");
+          $("#q4").val("");
+          $("#q5").val("");
+          $("#q6").val("");
+          $("#q7").val("");
+          $("#q8").val("");
+          $("#q9").val("");
+          $("#q10").val("");
         });
+
+        //ajax uses url and get methods to get data
+        $.ajax({url: "/api/match", method: "GET"})
+        .done(function(data) {
+        // console.log(data);
+        if (data) {
+          var jdata = JSON.stringify(data);
+          //create variable to hold values
+          //display in modal pop-up
+          var matchedFriends = $("<h4>");
+          matchedFriends.addClass('blue');
+          // matchedFriends.text(jdata.name);
+          matchedFriends.text("Your matches: " + jdata);
+          //test
+          // matchedFriends.text("text: data.name");
+          // matchedFriends.attr("src", jdata.photo);
+          $("#datacontent").append(matchedFriends);
+          //test if printing
+          // $("#modalContent").text("test");
+          //test if anything coming from apiRoutes
+          // $("#modalContent").text(jdata);
+          }
+          else {
+          $("#modalContent").text("Sorry, match not found.");
+          $("#modalContent").hide();
+        }
+      });
+
     });
-
-
-// function showFriends(){
-// var currentURL = window.location.origin;
-// $.ajax({url:currentURL + "api/friends", method:"GET"})
-// .done(function(friendsData){
-//         console.log("------------------------------------");
-//         console.log("URL: " + currentURL + "/api/friends");
-//         console.log("------------------------------------");
-// })
-// }
-
-// showFriends();
 
 </script>
 </html>

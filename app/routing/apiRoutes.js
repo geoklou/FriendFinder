@@ -1,45 +1,59 @@
 
-// var path = require("path");
-
-//load data from friends
+//load data from original api friends
 var friendsData = require("../data/friends");
-
+//load data from spawn api match
+var matchData = require("../data/match");
 //export module 
+
 module.exports = function(app) {
-// Get all friends
+
+//Get all friends
 app.get("/api/friends", function(req, res) {
   res.json(friendsData);
+  // console.log(friendsData);
+});
+
+//get match
+app.get("/api/match", function(req, res) {
+  res.json(matchData);
+  // console.log(matchata);
 });
 
 app.post("/api/friends", function(req, res) {
   var newFriend = req.body;
-  // console.log("object: " + newFriend);
+  //check new user info
   console.log("New user: " + newFriend.name + " Photo link: " + newFriend.photo + " Scores: " + newFriend.scores);
-  
-  res.send(newFriend);
-  // friendsData.push(newFriend);
-  //convert user's score to numbers
+
+  //convert user's scores to numbers
   var newFriendNumbers = newFriend.scores.map(Number);
-  console.log("Converted numbers: " + newFriendNumbers);
+  console.log("Converted numbers from new friend: " + newFriendNumbers); //working
 
-  for (var i = 0; i<friendsData.length; i++){
+  var diff;
+  
+    for (var i = 0; i < friendsData.length; i++){ 
+      for (var j = 0; j < friendsData[i].scores.length ; j++){
+        //convert differences to absoluet values
+        diff = Math.abs(friendsData[i].scores[j] - newFriendNumbers[j]); 
+      }
+          //criterion for match
+          if (diff <= 1) {
+          //confirm match
+          console.log("diff<1 =  " + friendsData[i].name);
+          //push match into new array matchData
+          matchData.push(friendsData[i]);
+          //check new array
+          console.log(matchData);
+        
+      }//for j loop ends
 
-    var num1 = newFriendNumbers[0];
-    console.log(num1);
-    //test find number location with same scores as seed user
-    var num2 = friendsData[0].scores[0];
-    console.log(num2);
-    // if(parseInt(newFriend.scores[i])-(parseInt(friendsData.scores[i]) <= 1))
-      if(num1 - num2 === 0)
-      {
-      console.log("Congratulations! " + newFriend.name + ": you are compatible with " + friendsData[i].name);
-    }
-      else 
-        console.log('Sorry, no compatible friends found.');
-  }
-  //after comparison, push newFriend into array
-  friendsData.push(newFriend);
+      }//for  loop ends
 
+      //push new friend to friendsData after it's been used to compute score difference 
+      //so it was not included in friendsData when computing
+      friendsData.push(newFriend);
+
+      //send data to front end survey.html, removing seed index 0
+      res.send(matchData.splice(0, 1));
 });
 
-}
+};
